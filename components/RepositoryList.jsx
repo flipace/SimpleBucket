@@ -4,7 +4,9 @@ RepositoryList = React.createClass({
         var repositories = Repositories.find({},{$order: ["name", "asc"]}).fetch();
 
         return {
-            repositories: _.sortBy(repositories, function(repo) { return repo.name.toLowerCase()})
+            isLoaded: RepositoriesSubscription.ready(),
+            repositories: _.sortBy(repositories, function(repo) { return repo.name.toLowerCase()}),
+            repository: Session.get('repository')
         }
     },
     onClickRepository(slug) {
@@ -15,14 +17,16 @@ RepositoryList = React.createClass({
             <div>
                 <h1>Repositories</h1>
                 <div className="repository-list">
-                    {this.data.repositories.map(this.renderRepository)}
+                    <VelocityTransitionGroup transitionName="default">
+                        {this.data.isLoaded ? this.data.repositories.map(this.renderRepository) : <LoadingIndicator message="Loading repositories..." />}
+                    </VelocityTransitionGroup>
                 </div>
             </div>
         )
     },
     renderRepository(repo) {
         return (
-            <div className="item" key={repo._id} onClick={this.onClickRepository.bind(null, repo.full_name)}>
+            <div className={"item"+(this.data.repository == repo.full_name ? ' active' : '')} key={repo._id} onClick={this.onClickRepository.bind(null, repo.full_name)}>
                 {repo.name}
             </div>
         )

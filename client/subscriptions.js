@@ -6,4 +6,4 @@ Meteor.autosubscribe(function(){
 Repositories = new Mongo.Collection('repositories');
 Repository = new Mongo.Collection('repository');
 
-Meteor.subscribe('repositories');
+RepositoriesSubscription = Meteor.subscribe('repositories'); 

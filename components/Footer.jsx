@@ -9,8 +9,15 @@ Footer = React.createClass({
     renderFooterLoggedIn() {
         return (
             <div className="footer logged-in">
-                footer
+                <a href="https://github.com/flipace/SimpleBucket">SimpleBucket on GitHub</a>
             </div>
         );
+    },
+    renderFooterGuest() {
+        return (
+            <div className="footer">
+                <a href="https://github.com/flipace/SimpleBucket">SimpleBucket on GitHub</a>
+            </div>
+        )
     }
 })

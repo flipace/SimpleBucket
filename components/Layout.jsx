@@ -28,6 +28,7 @@ MainLayout = React.createClass({
                 <div className="page-wrap">
                     <Header />
                     <div className="login-container">
+                        <img className="logo" src="images/bitbucket-logo.png" />
                         <h1>Make your Bitbucket life easier.</h1>
                         <p>With SimpleBucket, you can quickly browse through all your
                             repositories, issues and teams in a easy to use and clean interface.</p>
@@ -40,13 +41,15 @@ MainLayout = React.createClass({
             return (
                 <div className="page-wrap">
                     <Header />
-                    <div className="f-l container-left">
-                        <RepositoryList />
+                    <div className="container">
+                        <div className="f-l container-left">
+                            <RepositoryList />
+                        </div>
+                        <div className="container-right">
+                            <RepositoryDetails repository={this.data.repository} />
+                        </div>
+                        <div className="clear" />
                     </div>
-                    <div className="container-right">
-                        <RepositoryDetails repository={this.data.repository} />
-                    </div>
-                    <div className="clear" />
                     <Footer />
                 </div>
             )
