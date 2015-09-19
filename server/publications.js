@@ -1,18 +1,21 @@
 Meteor.publish('repositories', function() {
     var self = this;
 
-    var user = Meteor.users.findOne(this.userId);
-    var client = Bitbucket.forUser(user);
+    if(this.userId) {
+        var user = Meteor.users.findOne(this.userId);
 
-    var teams = client.get('/2.0/teams?role=admin');
+        var client = Bitbucket.forUser(user);
 
-    _.each(teams.values, function(team) {
-        var repos = client.get('/2.0/repositories/'+team.username);
+        var teams = client.get('/2.0/teams?role=admin');
 
-        _.each(repos.values, function(repo) {
-            self.added('repositories', Random.id(), repo)
+        _.each(teams.values, function(team) {
+            var repos = client.get('/2.0/repositories/'+team.username);
+
+            _.each(repos.values, function(repo) {
+                self.added('repositories', Random.id(), repo)
+            });
         });
-    });
 
-    self.ready();
+        self.ready();
+    }
 });

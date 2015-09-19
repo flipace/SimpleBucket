@@ -1,6 +1,8 @@
 Header = React.createClass({
     onClickLogout() {
-        Meteor.logout();
+        Meteor.logout(function() {
+            location.reload();
+        });
     },
     render() {
         return (
