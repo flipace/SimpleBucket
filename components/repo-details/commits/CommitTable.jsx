@@ -1,7 +1,7 @@
 CommitTable = React.createClass({
     getInitialState() {
         return {
-            dateType: 'standard' 
+            dateType: 'standard'
         }
     },
     shouldComponentUpdate(nextProps) {
@@ -22,9 +22,9 @@ CommitTable = React.createClass({
     },
     render() {
         var autolinker = new Autolinker({
-        
+
         });
-        
+
         return (
             <table className="commit-table" cellSpacing="0">
                 <thead>
@@ -36,18 +36,17 @@ CommitTable = React.createClass({
                     </tr>
                 </thead>
                 <tbody>
-                {this.props.commits.map((commit, i) => { 
-                    return this.renderSingleCommit(commit, i, autolinker); 
+                {this.props.commits.map((commit, i) => {
+                    return this.renderSingleCommit(commit, i, autolinker);
                 })}
                 </tbody>
             </table>
         )
     },
     renderSingleCommit(commit, i, autolinker) {
-        console.log(commit);
         return (
             <tr key={i}>
-                <td className="date-col">{moment(commit.date).calendar()}</td>  
+                <td className="date-col">{moment(commit.date).calendar()}</td>
                 <td className="author-col" dangerouslySetInnerHTML={{__html: autolinker.link(commit.author.raw.replace(/[\<\>]/g, ''))}}></td>
                 <td className="message-col">{commit.message}</td>
                 <td className="hash-col"><a className="button small copy-hash" data-clipboard-text={commit.hash}><i className="fa fa-copy"></i> Hash</a></td>

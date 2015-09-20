@@ -8,21 +8,43 @@ function getClient(userId) {
     return false;
 }
 
+Tracker.autorun(function() {
+    RepositoryCache = new ReactiveVar({ });
+});
+
 Meteor.publish('repositories', function() {
     var self = this;
     var client = getClient(this.userId);
+    var cache = RepositoryCache.get();
 
     if(!client) { return; }
 
     var teams = client.get('/2.0/teams?role=admin');
+    var user = client.get('/1.0/user').user;
 
     _.each(teams.values, function(team) {
+        cache[team.username] = [];
         var repos = client.get('/2.0/repositories/'+team.username);
 
         _.each(repos.values, function(repo) {
-            self.added('repositories', Random.id(), repo)
+            cache[team.username].push(repo);
         });
     });
+
+    cache[user.username] = [];
+    var repos = client.get('/2.0/repositories/'+user.username);
+
+    _.each(repos.values, function(repo) {
+        cache[user.username].push(repo);
+    });
+
+    _.each(cache, (user) => {
+        _.each(user, (repo) => {
+            this.added('repositories', Random.id(), repo);
+        });
+    });
+
+    RepositoryCache.set(cache);
 
     self.ready();
 });
