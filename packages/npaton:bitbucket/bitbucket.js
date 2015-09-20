@@ -57,7 +57,7 @@ Bitbucket.prototype = {
         params = _.extend({}, params || {});
         method = method.toUpperCase();
         var response = this._oauthBinding().call(method, path, params);
-        if (response.statusCode !== 200)
+        if (response.statusCode !== 200 && response.statusCode !== 204)
             throw new BitbucketError(response.statusCode, response.data);
         return response.data;
     },
@@ -103,7 +103,7 @@ Bitbucket.prototype = {
 
 function BitbucketError(code, messageOrError) {
     this.code = code;
-    if (typeOf(messageOrError) === "Error") {
+    if (typeof(messageOrError) === "Error") {
         this.name = "BitbucketError " + code + " (" + messageOrError.name + ")";
         this.message = messageOrError.message;
         return;

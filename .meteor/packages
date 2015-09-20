@@ -32,3 +32,4 @@ meteorhacks:fast-render
 fortawesome:fontawesome
 momentjs:moment
 reactive-var
+yasaricli:slugify

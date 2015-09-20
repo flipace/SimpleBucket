@@ -8,9 +8,8 @@ function getClient(userId) {
     return false;
 }
 
-Tracker.autorun(function() {
-    RepositoryCache = new ReactiveVar({ });
-});
+RepositoryCache = new ReactiveVar({ });
+DeletedRepositoryId = new ReactiveVar('');
 
 Meteor.publish('repositories', function() {
     var self = this;
@@ -27,7 +26,7 @@ Meteor.publish('repositories', function() {
         var repos = client.get('/2.0/repositories/'+team.username);
 
         _.each(repos.values, function(repo) {
-            cache[team.username].push(repo);
+            cache[team.username].push(_.extend(repo, {randomId: Random.id()}));
         });
     });
 
@@ -35,13 +34,30 @@ Meteor.publish('repositories', function() {
     var repos = client.get('/2.0/repositories/'+user.username);
 
     _.each(repos.values, function(repo) {
-        cache[user.username].push(repo);
+        cache[user.username].push(_.extend(repo, {randomId: Random.id()}));
     });
 
-    _.each(cache, (user) => {
-        _.each(user, (repo) => {
-            this.added('repositories', Random.id(), repo);
+    var added = [];
+    var deleted = [];
+
+    Tracker.autorun(() => {
+        var cache = RepositoryCache.get();
+
+        _.each(cache, (user) => {
+            _.each(user, (repo) => {
+                if(_.contains(added, repo.randomId) !== true) {
+                    this.added('repositories', repo.randomId, repo);
+                    added.push(repo.randomId);
+                }
+            });
         });
+
+        var id = DeletedRepositoryId.get();
+
+        if(id != "" && _.contains(deleted, id) === false) {
+            this.removed('repositories', id);
+            deleted.push(id);
+        }
     });
 
     RepositoryCache.set(cache);

@@ -16,7 +16,16 @@ RepositoryDetails = React.createClass({
         }
     },
     goToPage(page) {
-        Session.set('repository.page', page);
+        if(page !== 'delete') {
+            Session.set('repository.page', page);
+        } else {
+            if(confirm('Are you sure you want to delete the repository "'+this.data.repository.name+'" ? THIS ACTION CAN\'T BE UNDONE!')) {
+                var path = this.data.repository.links.self.href.substr(this.data.repository.links.self.href.indexOf(this.data.repository.owner.username));
+                Meteor.call('deleteRepository', {path}, function(err, res) {
+                    Session.set('repository', false);
+                });
+            }
+        }
     },
     render() {
         if(this.props.repository) {
@@ -49,6 +58,7 @@ RepositoryDetails = React.createClass({
 
                     {this.renderButton('overview')}
                     {this.renderButton('commits')}
+                    {this.renderButton('delete')}
                 </div>
 
                 <VelocityTransitionGroup transitionName="default">
@@ -84,6 +94,10 @@ RepositoryDetails = React.createClass({
                 break;
             case 'commits':
                 text = "Commits";
+                break;
+            case 'delete':
+                text = "Delete repository";
+                color = "red";
                 break;
             case 'pullrequests':
                 text = "Pull Requests";

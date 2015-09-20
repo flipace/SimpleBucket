@@ -151,6 +151,10 @@ a {
 
     h1 {
         margin: 20px;
+
+        .toggle {
+            display: none;
+        }
     }
 }
 
@@ -171,6 +175,18 @@ a {
         &:hover {
             border-bottom: 1px solid #1e81ab;
         }
+    }
+}
+
+.f-l h1 i {
+    font-size: 18px;
+    margin: 14px 0;
+    .opacity(0.6);
+    .transition(200ms, ease);
+
+    &:hover {
+        cursor: pointer;
+        .opacity(1);
     }
 }
 
@@ -277,6 +293,18 @@ a {
     }
 }
 
+input[type="text"],
+input[type="email"],
+input[type="number"] {
+    font-size: 16px;
+    padding: 6px;
+
+    .border-radius(5px,5px,5px,5px);
+
+    border: 1px solid #0f5b79;
+    .box-shadow(none);
+}
+
 .button {
     display: inline-block;
     padding: 4px;
@@ -297,6 +325,11 @@ a {
         background-color: #0f5b79;
     }
 
+    &.large {
+        font-size: 16px;
+        padding: 8px;
+    }
+
     &.green {
         background-color: #95c11f;
         border: 1px solid #589a0a;
@@ -304,6 +337,16 @@ a {
 
         &:hover {
             background-color: #589a0a;
+        }
+    }
+
+    &.red {
+        background-color: #c11f1f;
+        border: 1px solid #861c1c;
+        border-bottom: 3px solid #861c1c !important;
+
+        &:hover {
+            background-color: #861c1c;
         }
     }
 }
