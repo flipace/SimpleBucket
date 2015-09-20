@@ -16,11 +16,11 @@ RepositoryList = React.createClass({
         return (
             <div>
                 <h1>Repositories</h1>
+                <VelocityTransitionGroup key={"repository-list"} transitionName="default">
                 <div className="repository-list">
-                    <VelocityTransitionGroup key={"repository-list"} transitionName="default">
                         {this.data.isLoaded ? this.data.repositories.map(this.renderRepository) : <LoadingIndicator message="Loading repositories..." />}
-                    </VelocityTransitionGroup>
                 </div>
+                </VelocityTransitionGroup>
             </div>
         )
     },

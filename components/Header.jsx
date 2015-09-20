@@ -6,7 +6,7 @@ Header = React.createClass({
     },
     render() {
         return (
-            <div className="header">
+            <div className={"header"+(Meteor.userId() ? ' logged-in' : '')}>
                 <span className="f-l logo">SimpleBucket</span>
                 <div className="f-r">
                     {this.renderNavigation()}

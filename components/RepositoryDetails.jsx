@@ -6,7 +6,8 @@ RepositoryDetails = React.createClass({
 
             return {
                 isLoaded: RepositorySubscription.ready(),
-                repository: Repository.find().fetch()[0]
+                repository: Repository.find().fetch()[0],
+                page: Session.get('repository.page') || 'overview'
             }
         }
 
@@ -14,34 +15,8 @@ RepositoryDetails = React.createClass({
 
         }
     },
-    componentDidMount() {
-        this.initClipboard();
-    },
-    componentDidUpdate() {
-        this.initClipboard();
-    },
-    initClipboard() {
-        var client = new ZeroClipboard($('.clone-link'));
-
-        client.on('copy', function(evt) {
-            $(evt.target)
-                .addClass('animated flash');
-
-            if($(evt.target).parent().find('.copy-info').length <= 0) {
-                $(evt.target).after('<span class="copy-info animated fadeIn">Copied to clipboard</span>')
-            }
-
-            $(evt.target).one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function(evt) {
-                    $(this).removeClass('animated flash');
-                    $(this)
-                        .parent()
-                        .find('.copy-info').removeClass('animated fadeIn')
-                        .addClass('animated fadeOut')
-                        .one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function(evt) {
-                            $(this).remove();
-                        })
-                });
-        });
+    goToPage(page) {
+        Session.set('repository.page', page);
     },
     render() {
         if(this.props.repository) {
@@ -60,61 +35,29 @@ RepositoryDetails = React.createClass({
         var repository = this.data.repository;
 
         return (
-            <div key={this.props.repository} className="repository-details">
+            <div key={this.props.repository.replace('/','-')} className="repository-details">
                 <div className="repository-header">
                     <div className="f-l">
                         <span><a href={repository.links.self.href} target="_blank">{repository.full_name}</a></span>
                         <h1>{repository.name}</h1>
                     </div>
+
                     <div className="f-r">
                         {this.renderOwner()}
                     </div>
                     <div className="clear" />
-                </div>
 
-                <div className="repository-body">
-                    <p>{repository.description}</p>
-
-                    {this.renderButton('self')}
+                    {this.renderButton('overview')}
                     {this.renderButton('commits')}
-                    {this.renderButton('pullrequests')}
-
-                    <hr />
-
-                    <table>
-                    {this.data.repository.links.clone.map(this.renderCloneMethod)}
-                    </table>
-
                 </div>
+
+                <VelocityTransitionGroup transitionName="default">
+                    <div key="repository-body" className="repository-body">
+                        {this.renderPage()}
+                    </div>
+                </VelocityTransitionGroup>
             </div>
         )
-    },
-    renderButton(page) {
-        var links = this.data.repository.links;
-        var url = links.html.href;
-        var text = _.capitalize(page);
-        var color = "blue";
-
-        switch(page) {
-            case 'self':
-                text = "Go to repository";
-                color = "green";
-                break;
-            case 'commits':
-                url += '/commits/all';
-                text = "Commits";
-                break;
-            case 'pullrequests':
-                url += '/pull-requests/';
-                text = "Pull Requests";
-                break;
-        }
-
-        return (
-            <a className={"button "+color} href={url} target="_blank">
-                {text}
-            </a>
-        );
     },
     renderOwner() {
         var owner = this.data.repository.owner;
@@ -122,7 +65,7 @@ RepositoryDetails = React.createClass({
         return (
             <div className="repository-owner">
                 <span className="username">
-                    <a href={owner.links.self.href} target="_blank">
+                    <a href={owner.links.html.href} target="_blank">
                         <div style={{backgroundImage: 'url('+owner.links.avatar.href+')'}} className="avatar" />
                         <br />
                         {owner.display_name} ({owner.username})
@@ -131,12 +74,34 @@ RepositoryDetails = React.createClass({
             </div>
         )
     },
-    renderCloneMethod(clone, i) {
+    renderButton(page) {
+        var text = _.capitalize(page);
+        var color = "blue";
+
+        switch(page) {
+            case 'overview':
+                color = "green";
+                break;
+            case 'commits':
+                text = "Commits";
+                break;
+            case 'pullrequests':
+                text = "Pull Requests";
+                break;
+        }
+
         return (
-            <tr key={i+clone.name}>
-                <td><b>{clone.name.toUpperCase()}</b></td>
-                <td><span className="clone-link" data-clipboard-text={clone.href}>{clone.href}</span></td>
-            </tr>
-        )
+            <a className={"button small "+color} onClick={this.goToPage.bind(null, page)}>
+                {text}
+            </a>
+        );
+    },
+    renderPage() {
+        switch(this.data.page) {
+            case 'commits':
+                return <RepositoryCommits key="commits" {...this.data.repository} />; break;
+            case 'overview':
+                return <RepositoryOverview key="overview" {...this.data.repository} />; break;
+        }
     }
 });
