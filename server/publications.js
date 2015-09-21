@@ -81,16 +81,21 @@ Meteor.publish('repository', function(path) {
     this.ready();
 });
 
-var CommitCache = { repo: { } };
+var CommitCache = {  };
 
 Meteor.publish('commits', function(repo, limit) {
     if(repo === false) {
         this.stop();
-    } else if ( typeof(CommitCache[repo]) == 'undefined' ) {
-        CommitCache[repo] = { page: 1, values: [] }
+    } else if ( typeof(CommitCache[this.userId]) == 'undefined' ) {
+        CommitCache[this.userId] = {
+            repo: {
+                page: 1,
+                values: []
+            }
+        }
     }
 
-    var cache = CommitCache[repo];
+    var cache = CommitCache[this.userId]['repo'];
 
     var client = getClient(this.userId);
     var ready = false;
@@ -100,7 +105,6 @@ Meteor.publish('commits', function(repo, limit) {
     var lengthBefore = cache.values.length;
 
     while(cache.values.length < limit) {
-        console.log(cache.page);
         var url = '/2.0/repositories/'+repo+'/commits?page='+cache.page;
         var commits = client.get(url);
 
