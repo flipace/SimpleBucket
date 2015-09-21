@@ -16,25 +16,29 @@ Meteor.publish('repositories', function() {
     var client = getClient(this.userId);
     var cache = RepositoryCache.get();
 
+    if(typeof(cache[this.userId]) == 'undefined') {
+        cache[this.userId] = {};
+    }
+
     if(!client) { return; }
 
     var teams = client.get('/2.0/teams?role=admin');
     var user = client.get('/1.0/user').user;
 
     _.each(teams.values, function(team) {
-        cache[team.username] = [];
+        cache[self.userId][team.username] = [];
         var repos = client.get('/2.0/repositories/'+team.username);
 
         _.each(repos.values, function(repo) {
-            cache[team.username].push(_.extend(repo, {randomId: Random.id()}));
+            cache[self.userId][team.username].push(_.extend(repo, {randomId: Random.id()}));
         });
     });
 
-    cache[user.username] = [];
+    cache[this.userId][user.username] = [];
     var repos = client.get('/2.0/repositories/'+user.username);
 
     _.each(repos.values, function(repo) {
-        cache[user.username].push(_.extend(repo, {randomId: Random.id()}));
+        cache[self.userId][user.username].push(_.extend(repo, {randomId: Random.id()}));
     });
 
     var added = [];
@@ -43,7 +47,7 @@ Meteor.publish('repositories', function() {
     Tracker.autorun(() => {
         var cache = RepositoryCache.get();
 
-        _.each(cache, (user) => {
+        _.each(cache[this.userId], (user) => {
             _.each(user, (repo) => {
                 if(_.contains(added, repo.randomId) !== true) {
                     this.added('repositories', repo.randomId, repo);

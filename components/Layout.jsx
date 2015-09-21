@@ -29,8 +29,10 @@ MainLayout = React.createClass({
                             <p>With SimpleBucket, you can quickly browse through all your
                                 repositories, issues and teams in an easy to use and clean interface.</p>
                             <div ref="loginButtons" />
+                            <br />
+                            <a href="http://paypal.me/patrickneschkudla" target="_blank" className="button green"><i className="fa fa-smile-o"></i> Donate!</a>
 
-                            <img src="images/preview.png" className="preview" />
+                            <img src="images/preview.png" className="preview" style={{marginTop: 15}}/>
 
                             <Footer />
                         </div>
